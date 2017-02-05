@@ -10,16 +10,19 @@ from PIL import Image
 import numpy as np
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation, Flatten, Dropout
-from keras.layers.convolutional import Convolution2D
+from keras.layers import Convolution2D, Lambda
 from keras.layers.pooling import MaxPooling2D
-
 tf.python.control_flow_ops = tf
+
+cols = 32
+rows = 16
+
 
 # Open the data from the files
 def LoadImages(log, index, cols, rows):
     # print(log[index].split('/')[1])
     # need to swap the / to a \ for Windows.
-    #print(log[index].split('/')[1])
+    # print(log[index].split('/')[1])
     img = Image.open("./IMG/%s" % log[index].split('/')[1])
     img = np.array(img)
     return cv2.resize(img, (cols, rows))
@@ -38,36 +41,28 @@ with open('driving_log.csv') as csvfile:
         logs.append(row)
 
 for row in logs:
-    X.append(LoadImages(row, 0, 32, 16))
+    X.append(LoadImages(row, 0, cols, rows))
     y.append(float(row[3]))
-    X.append(LoadImages(row, 1, 32, 16))
+    X.append(LoadImages(row, 1, cols, rows))
     y.append(float(row[3]) + steeringAdjust)
-    X.append(LoadImages(row, 2, 32, 16))
+    X.append(LoadImages(row, 2, cols, rows))
     y.append(float(row[3]) + steeringAdjust)
 
 X = np.array(X)
 y = np.array(y)
-print(X.shape)
+
+
+print("Images and labels loaded")
 
 # preprocessing
 # Load the data into training and test sets
 xTrain = X[:-2000]
 yTrain = y[:-2000]
-xTest = X[:-2000]
-yTest = y[:-2000]
+xTest = X[-2000]
+yTest = y[-2000]
 print("Train totals", xTrain.shape)
 print("Test totals", xTest.shape)
 
-
-# split into train, test, validation
-xTrain, XValidation, yTrain, yValidation = train_test_split(xTrain, yTrain, test_size=0.2, random_state=0)
-print("Train", xTrain.shape)
-print("Test", xTest.shape)
-print("validation", XValidation.shape)
-# shuffle the data
-xTrain, yTrain = shuffle(xTrain, yTrain)
-
-# Normalize the features
 print('features normalized')
 
 
@@ -104,6 +99,7 @@ model.add(Dense(1))
 #model.add(Activation('softmax'))
 #print('FC 2 activation',model.output_shape)
 
+model.summary() # print model summary
 model.compile('adam', 'mean_squared_error', ['accuracy'])
 print("begin training")
-history = model.fit(X_normalized, yTrain, nb_epoch=10, validation_split=0.2)
+history = model.fit(xTrain, yTrain, nb_epoch=40, validation_split=0.2)
