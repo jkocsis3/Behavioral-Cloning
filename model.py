@@ -13,9 +13,12 @@ from keras.layers.core import Dense, Activation, Flatten, Dropout
 from keras.layers import Convolution2D, Lambda
 from keras.layers.pooling import MaxPooling2D
 tf.python.control_flow_ops = tf
+import matplotlib.pyplot as plt
+# get_ipython().magic('matplotlib inline')
 
-cols = 32
-rows = 16
+
+cols = 160
+rows = 80
 
 
 # Open the data from the files
@@ -54,6 +57,7 @@ y = np.array(y)
 
 print("Images and labels loaded")
 
+
 # preprocessing
 # Load the data into training and test sets
 xTrain = X[:-2000]
@@ -63,7 +67,19 @@ yTest = y[-2000]
 print("Train totals", xTrain.shape)
 print("Test totals", xTest.shape)
 
-print('features normalized')
+
+
+print (xTrain[1].shape)
+
+image=xTrain[1]#.squeeze()
+plt.figure(figsize=(10,10))
+plt.imshow(image)
+print(yTrain[1])
+
+
+# One-Hot encode the labels
+label_binarizer = LabelBinarizer()
+y_one_hot = label_binarizer.fit_transform(yTrain)
 
 
 def normalize_grayscale(image_data):
@@ -77,29 +93,72 @@ def normalize_grayscale(image_data):
 X_normalized = normalize_grayscale(xTrain)
 print("Done")
 
+"""
+# Original Model, was not learning, so i tried to implement the NVidia model below.
+model = Sequential()
+model.add(Convolution2D(64, 3, 3, input_shape=(rows, cols, 3), dim_ordering='tf'))
+model.add(MaxPooling2D((2, 2), dim_ordering='tf'))
+model.add(Dropout(0.5))
+model.add(Activation('relu'))
+
+#model.add(Convolution2D())
+
+model.add(Flatten())
+
+model.add(Dense(128))
+model.add(Activation('relu'))
+
+model.add(Dense(1))
+model.add(Activation('softmax'))
+model.summary() # print model summary
+"""
+#NVIDIA Model
+#https://arxiv.org/pdf/1604.07316v1.pdf
 
 model = Sequential()
-model.add(Convolution2D(32, 3, 3, input_shape=(16, 32, 3)))
-# print('conv 1', model.output_shape)
-# Max pooling will cut your shape in 1/2
-model.add(MaxPooling2D((2, 2), dim_ordering='tf'))
-# print('conv1 pool',model.output_shape)
-model.add(Dropout(0.5))
-# print('conv1 dropout',model.output_shape)
-model.add(Activation('relu'))
-# print('conv1 activation', model.output_shape)
-model.add(Flatten())
-# print('Flatten', model.output_shape)
-model.add(Dense(128))
-# print('FC1',model.output_shape)
-model.add(Activation('relu'))
-# print('FC1 Activation',model.output_shape)
-model.add(Dense(1))
-# print('FC2',model.output_shape)
-#model.add(Activation('softmax'))
-#print('FC 2 activation',model.output_shape)
 
-model.summary() # print model summary
+model.add(Convolution2D(24,5,5, input_shape=(rows,cols,3), dim_ordering='tf'))
+model.add(MaxPooling2D((2, 2), dim_ordering='tf'))
+model.add(Dropout(0.5))
+model.add(Activation('relu'))
+
+model.add(Convolution2D(36,5,5, dim_ordering='tf'))
+model.add(MaxPooling2D((2, 2), dim_ordering='tf'))
+model.add(Dropout(0.5))
+model.add(Activation('relu'))
+
+model.add(Convolution2D(48,5,5, dim_ordering='tf'))
+model.add(MaxPooling2D((2, 2), dim_ordering='tf'))
+model.add(Dropout(0.5))
+model.add(Activation('relu'))
+
+model.add(Convolution2D(64,3,3, dim_ordering='tf'))
+model.add(MaxPooling2D((2, 2), dim_ordering='tf'))
+model.add(Dropout(0.5))
+model.add(Activation('relu'))
+
+model.add(Flatten())
+
+model.add(Dense(100))
+model.add(Activation('relu'))
+
+model.add(Dense(50))
+model.add(Activation('relu'))
+
+
+model.add(Dense(10))
+model.add(Activation('relu'))
+
+model.add(Dense(1))
+#model.add(Activation('softmax'))
+
+
+
+model.summary()
+
+
+
 model.compile('adam', 'mean_squared_error', ['accuracy'])
 print("begin training")
-history = model.fit(xTrain, yTrain, nb_epoch=40, validation_split=0.2)
+history = model.fit(xTrain, yTrain, nb_epoch=5, validation_split=0.2)
+
