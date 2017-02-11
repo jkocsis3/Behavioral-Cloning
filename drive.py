@@ -19,6 +19,8 @@ from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_a
 import tensorflow as tf
 tf.python.control_flow_ops = tf
 
+import cv2
+
 
 sio = socketio.Server()
 app = Flask(__name__)
@@ -36,7 +38,14 @@ def telemetry(sid, data):
     # The current image from the center camera of the car
     imgString = data["image"]
     image = Image.open(BytesIO(base64.b64decode(imgString)))
+
+    # need to resize the images, adding this in from my file
+    image = np.array(image)
+    image = cv2.resize(image, (160, 320))
+    #back to original code
+
     image_array = np.asarray(image)
+
     transformed_image_array = image_array[None, :, :, :]
     # This model currently assumes that the features of the model are just the images. Feel free to change this.
     steering_angle = float(model.predict(transformed_image_array, batch_size=1))
