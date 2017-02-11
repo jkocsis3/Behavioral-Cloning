@@ -126,9 +126,9 @@ yProcessed = np.array(yProcessed)
 #https://arxiv.org/pdf/1604.07316v1.pdf
 
 model = Sequential()
-model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(newHeight, newWidth,   3), dim_ordering='tf'))
-model.add(Lambda(lambda x: (x / 255) - 0.5 ))
-model.add(Convolution2D(24,5,5,  dim_ordering='tf', ), ) # input_shape=(newHeight, newWidth, 3),
+#model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(newHeight, newWidth,   3), dim_ordering='tf'))
+model.add(Lambda(lambda x: (x / 255) - 0.5, input_shape=(newHeight, newWidth,   3)))
+model.add(Convolution2D(24,5,5,  dim_ordering='tf', ) ) # input_shape=(newHeight, newWidth, 3),
 model.add(MaxPooling2D((2, 2), dim_ordering='tf'))
 model.add(Dropout(0.5))
 model.add(Activation('relu'))
