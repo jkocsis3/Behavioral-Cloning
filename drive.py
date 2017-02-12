@@ -41,7 +41,8 @@ def telemetry(sid, data):
 
     # need to resize the images, adding this in from my file
     image = np.array(image)
-    image = cv2.resize(image, (160, 320))
+    # image = cv2.resize(image, (160, 320))
+    image = cv2.resize(image, (64, 64))
     #back to original code
 
     image_array = np.asarray(image)
@@ -51,20 +52,13 @@ def telemetry(sid, data):
     steering_angle = float(model.predict(transformed_image_array, batch_size=1))
     # The driving model currently just outputs a constant throttle. Feel free to edit this.
     # throttle = 0.15
-    """
-    speed = float(data["speed"])
-    boost = 1 - speed / 30.2 + 0.3
-    throttle = boost if (boost < .5) else .5
-    if abs(steering_angle) > 0.3:
-        throttle *= 0.2
 
-    """
     if abs(steering_angle) > 0.05:
-        throttle = .05
+        throttle = .075
     elif abs(steering_angle) > .1:
         throttle = 0
     else:
-        throttle = .15
+        throttle = .2
     print(steering_angle, throttle)
     send_control(steering_angle, throttle)
 
