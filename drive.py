@@ -53,15 +53,17 @@ def telemetry(sid, data):
     # The driving model currently just outputs a constant throttle. Feel free to edit this.
     # throttle = 0.15
 
-    if abs(steering_angle) > 0.05:
-        throttle = .075
-    elif abs(steering_angle) > .1:
-        throttle = 0
+    # adjusting the throttle output. You want to slow down as turns get steeper, and accelerate out of them.
+    if 0.05 < abs(steering_angle) < 0.069:
+        throttle = .1
+    elif abs(steering_angle) > 0.07:
+        throttle = .035
     else:
-        throttle = .2
+        throttle = .25
+
+
     print(steering_angle, throttle)
     send_control(steering_angle, throttle)
-
 
 @sio.on('connect')
 def connect(sid, environ):

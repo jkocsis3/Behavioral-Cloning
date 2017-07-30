@@ -1,5 +1,5 @@
 
-# Behavioral Cloning Project
+# Behavrioal Cloning Project
 
 The goals / steps of this project are the following:
 
@@ -28,9 +28,9 @@ Here I will consider the rubric points individually and describe how I addressed
 2. Submssion includes functional code
 
     Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing
-       
+
         python drive.py model.json
-            
+    
 
 3. Submssion code is usable and readable
 
@@ -71,32 +71,10 @@ For details about how I created the training data, see the next section.
     
     I performed a split (20%) of the training data in order to provide validation data.  I found the model would have a low MSE but would not be able to navigate the course.  At this time, I began to manipulate the images.  I performed random image processing (ProcessImage function).  I learned how to plot a histogram in Python as was able to visualize the steering angles.  I found random flipping didnt always work out to well to balance the data as I would lose one image.  I then implemented code to keep the original image and then provide a flipped copy.  This helped to balance out the data much better.  I then performed a random gamma adjust to darken the images.
     
-![Histograms of steering angles](image29.jpg )
-
-
-
-
-
-   The original data did not have any recovery images, so I gathered these by recovering from both the left and right hand sides of the track.  Because the track was so heavily left turn skewed, I decided to drive the track going the opposite direction.
+    The original data did not have any recovery images, so I gathered these by recovering from both the left and right hand sides of the track.  Because the track was so heavily left turn skewed, I decided to drive the track going the opposite direction.
     
-   Originally i was not resizing my images, but found resizing to 64x64 still allowed the model to train, and train faster.  This is still a bit confusing as the images are not proportionally correct, but they did work.
+    Originally i was not resizing my images, but found resizing to 64x64 still allowed the model to train, and train faster.  This is still a bit confusing as the images are not proportionally correct, but they did work.
     
-
-![Left side Recovery](IMG2\center_2017_02_12_15_48_21_388.jpg )
-<center>Left Side Recovery</center>
-
-![Right side Recovery](IMG2\center_2017_02_12_15_48_44_810.jpg )
-<center>Right Side Recovery</center>
-
-![Flipped and Original Image](image26.jpg )
-<center>Flipped and Original Image</center>
-
-![Adjusted Gamma and Original Image](image27.jpg )
-<center>Adjusted Gamma and Original Image</center>
-
-
-
-
 
 At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
 
@@ -107,7 +85,7 @@ The final model architecture consisted of a convolution neural network with the 
 
 ### Model Architecture
 ___________________________________________________________________________________________________
-Layer (type)                    Output Shape          Param #     Connected to                   
+Layer (type)                     Output Shape          Param #     Connected to                   
 ____________________________________________________________________________________________________
 lambda_1 (Lambda)                (None, 64, 64, 3)     0           lambda_input_1[0][0]             
 ____________________________________________________________________________________________________
